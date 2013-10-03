@@ -1,0 +1,157 @@
+﻿@model PMB.Data.Elemento
+
+@{    
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script language="javascript">
+$(function () {
+    //btnCrear
+
+    // Document.ready -> link up remove event handler
+        $(".btnCrear").click(function () {
+            // Get the id from the link            
+            // Perform the ajax post                        
+            if($.trim($("#txtDetalle").val()) == ""){
+                alert("Ingrese el comentario de tu experiencia");
+                return false;
+            }                         
+
+            if($.trim($("#selEvaluacion").val()) == ""){
+                alert("Evalúa tu experiencia");
+                return false;
+            }                         
+
+
+            $.post("/Seccion/CreateDetails", { "idElemento": @Model.ID, "comentario": $.trim($("#txtDetalle").val()), "evaluacion": $.trim($("#selEvaluacion").val()) },
+                function (data) {
+                    // Successful requests get here
+                    // Update the page elements
+                    //alert(data.mensaje);
+                    window.open("@Url.Action("ElementoDetails", "Seccion")", "_self");
+                });
+
+        });  
+                        
+});
+</script>
+
+<div class="widget stacked">
+    <div class="widget-header">
+		<h3>@ViewBag.categoria.Nombre > @Model.Nombre</h3>
+	</div> <!-- /widget-header -->
+
+    <div class="widget-content">
+        <div class="row-fluid">                                
+            <div class="span4">                
+                <div class="display-field">
+                @{
+                            
+                    if (Model.Imagen==null){
+                        <p>No existe imagen</p>   
+                    }else{
+                        <img src="@Url.Action("ImagenElemento", "Seccion", new { id = Model.ID })" width=300 height=200 />   
+                    }
+                            
+                }
+                </div>                
+            </div>
+        
+            <div class="span4">
+                <div class="alert alert-info">
+                                  
+                    <div class="display-field">
+                    <b>Nombre: </b>@Html.DisplayFor(model => model.Nombre)               
+                    </div>
+                    <div class="display-field">
+                    <b>Teléfono: </b>@Html.DisplayFor(model => model.Telefono)
+                    </div>
+                    <div class="display-field">
+                    <b>Comuna: </b>@Html.DisplayFor(model => model.Comuna)
+                    </div>        
+                    <div class="display-field">
+                    <b>Ingresado el: </b>@Html.DisplayFor(model => model.Fecha)
+                    </div>
+                    <p>&nbsp;</p>        
+                    <b>Recomendado por: </b>@Html.DisplayFor(model => model.Usuario.Nombre)
+                </div>                
+            </div>
+        
+            <div class="span4">
+                
+                @Html.TraeEvaluacionElemento((decimal)ViewBag.idBarrio, Model.ID)
+                          
+            </div>                                                      
+        </div>
+        
+    </div>
+</div>
+ 
+<!-- Modal -->
+<div id="CrearDetalle" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Ingresa tu experiencia</h3>
+    </div>
+    <div class="modal-body">    
+    <p>Comenta tu experiencia</p>
+    <input  class="span12" type="text" name="txtDetalle" id="txtDetalle" placeholder="Comenta tu experiencia" />
+    <p>Evalúa tu experiencia del 1 al 10</p>
+    <select class="form-control input-sm span12" name="selEvaluacion" id="selEvaluacion">
+        <option value="">(Seleccione)</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>        
+        <option value="7">8</option>        
+        <option value="7">9</option>        
+        <option value="7">10</option>        
+    </select>    
+    </div>
+    <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btnCrear btn btn-success">Guardar experiencia</button>
+    </div>
+</div>   
+
+<div class="widget stacked">
+    <div class="widget-header">
+		<h3>Experiencia vecinos</h3>
+	</div> <!-- /widget-header -->
+
+    <div class="widget-content">
+        @foreach (var item in ViewBag.elementoDetalle)
+        {
+            String correo = item.Usuario.Correo;
+            <ul class="thumbnails">                      
+                <li class="span12">
+                <div class="thumbnail">                                                    
+                    <span class="well well-small span12">
+                    <p>Escrito por @item.Usuario.Nombre el @item.Fecha, evaluado con un @item.Evaluacion</p>
+                    </span>
+                    <div class="container-fluid">
+                        <div class="row-fluid">
+                        <div class="span2 text-center">
+                            @Html.GravatarImage(correo, size: 80, defaultImage: GravatarHtmlHelper.DefaultImage.Identicon, rating: GravatarHtmlHelper.Rating.PG)
+                        </div>
+                        <div class="span10">                                                                                  
+                            @HttpUtility.HtmlDecode(item.Detalle)
+                        </div>
+                        </div>
+                        <p></p>
+                    </div>
+                </div>
+                </li>
+            </ul>
+        }
+
+        <!-- Button to trigger modal -->
+        <a href="#CrearDetalle" role="button" class="btn btn-primary" data-toggle="modal">Ingresa tu experiencia</a>
+    </div>
+</div>
+<p>
+   <input class="btn" type="button" value="Volver al listado de elementos" onclick="AbreLink('@Url.Action("ElementoIndex", "Seccion", new { _idCategoria = PMB.Bussiness.Seguridad.EncryptString(ViewBag.categoria.ID) })');" />
+</p>

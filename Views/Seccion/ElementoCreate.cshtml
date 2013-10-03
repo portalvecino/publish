@@ -1,0 +1,123 @@
+﻿@model PMB.Data.Elemento
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script language="javascript">
+    $(function () {
+        // Document.ready -> link up remove event handler
+        $(".imgEliminar").click(function () {
+            // Get the id from the link            
+            // Perform the ajax post
+            $.post("/Noticia/EliminaArchivoAdjunto", { "id": $(this).attr("id-archivo") },
+                function (data) {
+                    // Successful requests get here
+                    // Update the page elements
+
+                    alert(data.mensaje, "Mensaje de confirmación");
+                    $("#" + data.valor).remove();
+                });
+
+        });
+
+    });
+
+
+
+
+    function Confirma() {
+        //Validación de ingreso obligatorio de campos
+        if ($.trim($("#Nombre").val()) == "") {
+            alert("Ingrese el nombre.");
+            document.getElementById("Nombre").focus();
+            return false;
+        }
+
+        if ($.trim($("#Telefono").val()) == "") {
+            alert("Ingrese el teléfono.");
+            document.getElementById("Telefono").focus();
+            return false;
+        }
+
+        if ($.trim($("#Comuna").val()) == "") {
+            alert("Ingrese la comuna.");
+            document.getElementById("Comuna").focus();
+            return false;
+        }
+
+        if (document.getElementById("ImagenElemento").value != "") {
+            var sExt = document.getElementById("ImagenElemento").value.split(".")[1];
+            if (sExt.toLowerCase() != "jpg" && sExt.toLowerCase() != "png" && sExt.toLowerCase() != "bmp") {
+                alert("Seleccione un formato de archivo válido: imágenes (jpg, png, bmp);");
+                return false;
+            }            
+        }
+
+        return true;
+    }    
+    
+    
+</script>
+
+@using (Html.BeginForm("ElementoCreate", "Seccion", FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "return Confirma();" }))    
+{ 
+    @Html.ValidationSummary(true)
+    <div class="alert alert-info">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <h4>Informativo</h4>
+      <p>Esta sección te permitirá incorporar un nuevo elemento el cuál podrá ser comentado y votado por los demás usuarios. Incorpora un elemento que pueda ser de utilidad para la comunidad.</p>
+    </div>
+    
+   <div class="widget stacked">
+    <div class="widget-header">
+		<h3>Elemento</h3>
+	</div> <!-- /widget-header -->
+     
+    <div class="widget-content">		  
+        <input type="hidden" name="ID_SeccionCategoria" value="@ViewBag.idCategoria" />
+        <input type="hidden" name="ID_Usuario" value="@ViewBag.idUsuario" />        
+        @Html.HiddenFor(model => model.Eliminada)
+        @Html.HiddenFor(model => model.Imagen)
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Nombre)
+        </div>
+        <div class="editor-field">
+            <input type="text" name="Nombre" id="Nombre" value="@Html.DisplayFor(p => p.Nombre)" />            
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Telefono)
+        </div>
+        <div class="editor-field">
+            <input type="text" name="Telefono" id="Telefono" value="@Html.DisplayFor(p => p.Telefono)" />            
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Comuna)
+        </div>
+        <div class="editor-field">
+            <input type="text" name="Comuna" id="Comuna" value="@Html.DisplayFor(p => p.Comuna)" />            
+        </div>                
+
+        <div class="editor-field">
+            Imagen
+        </div>                
+
+        <div class="editor-field">
+            <input name='ImagenElemento' id='ImagenElemento' type='file' readonly onpaste='return false;' />
+        </div>                
+    </div>
+</div>
+
+        <p>
+            <input type="submit" value="Grabar elemento" class="btn btn-success"  />
+        </p>    
+}
+
+<div>
+    <input class="btn" type="button" value="Volver al listado de elementos" onclick="AbreLink('@Url.Action("ElementoIndex", "Seccion", new { idCategoria=ViewBag.idCategoria, id=0 })');" />    
+</div>

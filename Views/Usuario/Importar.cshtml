@@ -1,0 +1,72 @@
+﻿@{
+    ViewBag.Title = "Importar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script language="javascript">
+
+    function Confirma() {
+
+        if (document.getElementById("Archivo").value.search(".") >= 0) {
+            if (document.getElementById("Archivo").value.toUpperCase().split(".")[1] != "TXT") {
+                alert("Imposible importar: La extensión del archivo debe ser txt.", "Error en el archivo");
+                return false;
+            }
+        }
+        
+        return true;        
+    }
+        
+
+</script>
+
+@using (Html.BeginForm("Importar", "Usuario", FormMethod.Post, new { id="frm", enctype = "multipart/form-data", onsubmit = "return Confirma();" }))
+{    
+    
+<div class="widget stacked">
+    <div class="widget-header">
+		<h3>Importación vecinos</h3>
+	</div> <!-- /widget-header -->
+				
+	<div class="widget-content">		
+    
+        <h3>Instrucciones</h3>
+
+        <div class="row-fluid">
+            <div class="span9">
+                <p>Seleccione un archivo siguiendo el siguente formato (campos separados por comas):</p>
+                <p>La extensión del archivo debe ser ".txt", por ejemplo: vecinos.txt</p>
+                <br />
+                <p>Rut, Nombre, Dirección, Número, Teléfono, Celular, Correo, Password</p>
+            </div>
+        </div>
+
+        <input name='Archivo' id='Archivo' type='file' readonly onpaste='return false;' />
+        
+        <b style="color:green">@ViewBag.Mensaje</b>
+        <p>&nbsp;</p>
+        @{
+            if (ViewBag.MensajeError != null)
+            {
+
+                foreach (var item in ViewBag.MensajeError)
+                {
+                    @item.ToString()<br />
+                }
+                            
+            }
+            
+        }        
+</div> <!-- /widget-content -->
+			
+</div> <!-- /widget -->    
+        
+        <p>
+            <input type="submit" value="Importar" class="btn btn-success"  />
+        </p>
+    
+}
+
+<div>
+    <input class="btn" type="button" value="Volver al listado de usuarios" onclick="AbreLink('@Url.Action("Index", "Usuario")');" />    
+</div>

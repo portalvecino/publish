@@ -1,0 +1,239 @@
+﻿@model PMB.Data.Usuario
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<head>
+    <script language="javascript">
+        function Confirma() {
+            //Validación de ingreso del cuerpo de la noticia.
+            if ($.trim($("#Nombre").val()) == "") {
+                alert("Ingrese el nombre del usuario.");
+                document.getElementById("Nombre").focus();
+                return false;
+            }
+
+            //Validación de ingreso del cuerpo de la noticia.
+            if ($.trim($("#Direccion").val()) == "") {
+                alert("Ingrese la dirección del usuario.");
+                document.getElementById("Direccion").focus();
+                return false;
+            }
+
+            //Validación de ingreso del cuerpo de la noticia.
+            if ($.trim($("#Numero").val()) == "") {
+                alert("Ingrese el número de casa del usuario.");
+                document.getElementById("Numero").focus();
+                return false;
+            }
+
+            //Validación de ingreso del cuerpo de la noticia.
+            if ($.trim($("#Celular").val()) == "") {
+                alert("Ingrese el celular del usuario.");
+                document.getElementById("Celular").focus();
+                return false;
+            }
+
+            //Validación de ingreso del cuerpo de la noticia.
+            if ($.trim($("#Correo").val()) == "") {
+                alert("Ingrese el correo del usuario.");
+                document.getElementById("Correo").focus();
+                return false;
+            }
+
+
+            //Validación de correos ingresada.
+            if ($.trim($("#Correo").val().toUpperCase()) != $.trim($("#txtCorreo2").val().toUpperCase())) {
+                alert("No coincide la información entre los correos ingresados.");
+                document.getElementById("txtCorreo2").select();
+                document.getElementById("txtCorreo2").focus();
+                return false;
+            }
+
+            //Validación de ingreso del cuerpo de la noticia.
+            if ($.trim($("#Password").val()) == "") {
+                alert("Ingrese el password del usuario.");
+                document.getElementById("Password").focus();
+                return false;
+            }
+
+            //Validación de password ingresada.
+            if ($.trim($("#Password").val().toUpperCase()) != $.trim($("#txtPassword2").val().toUpperCase())) {
+                alert("No coincide la información entre los Password ingresados.");
+                document.getElementById("txtPassword2").select();
+                document.getElementById("txtPassword2").focus();
+                return false;
+            }
+
+
+            return true;
+        }
+    </script>
+</head>
+
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+@using (Html.BeginForm("Edit", "Usuario", FormMethod.Post, new { onsubmit = "return Confirma();" })) {
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <legend>Usuario</legend>
+        
+        @Html.HiddenFor(model => model.ID)
+
+        @Html.HiddenFor(model => model.ID_Barrio)        
+    <table border=0>
+        <tr>
+            <td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Rut)
+                </div>
+            </td>
+            <td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Nombre)
+                </div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.Rut, new { size = "30" })
+                    @Html.ValidationMessageFor(model => model.Rut)
+                </div>
+
+            </td>
+            <td>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.Nombre, new { size = "30" })
+                    @Html.ValidationMessageFor(model => model.Nombre)
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Direccion)
+                </div>
+            </td>
+            <td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Numero)
+                </div>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.Direccion, new { size = "30" })
+                    @Html.ValidationMessageFor(model => model.Direccion)
+                </div>
+            </td>
+            <td>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.Numero, new { size = "30" })
+                    @Html.ValidationMessageFor(model => model.Numero)
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Telefono)
+                </div>
+            </td>
+            <td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Celular)
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.Telefono, new { size = "30" })
+                    @Html.ValidationMessageFor(model => model.Telefono)
+                </div>
+            </td>
+            <td>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.Celular, new { size = "30" })
+                    @Html.ValidationMessageFor(model => model.Celular)
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Correo)
+                </div>
+            </td>
+            <td>
+                <div class="editor-label">
+                    Reingrese correo
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.Correo, new { size = "30" })
+                    @Html.ValidationMessageFor(model => model.Correo)
+                </div>
+            </td>
+            <td>
+                <div class="editor-field">
+                    <input type="text" id="txtCorreo2" name="txtCorreo2" size="30" value="@Model.Correo" />
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Password)
+                </div>
+            </td>
+            <td>
+                <div class="editor-label">
+                    Reingrese Password
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="editor-field">
+                    @Html.PasswordFor(model => model.Password, new { value = Model.Password })
+                </div>
+            </td>
+            <td>
+                <div class="editor-field">
+                    <input type="password" id="txtPassword2" name="txtPassword2" value="@Model.Password" />
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+        <div class="editor-label">
+            @Html.HiddenFor(model => model.Admin)
+        </div>        
+        <br />
+        <b style="color:@ViewBag.color">@ViewBag.mensaje</b>
+    
+        <p>
+            <input type="submit" value="Actualizar Usuario" class="button medium green"  />
+        </p>
+    </fieldset>
+}

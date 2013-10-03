@@ -1,0 +1,127 @@
+﻿@model PMB.Data.Seccion
+
+@{    
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script language="javascript">
+$(function () {
+    //btnCrear
+
+    // Document.ready -> link up remove event handler
+        $(".btnCrear").click(function () {
+            // Get the id from the link            
+            // Perform the ajax post                        
+            if($.trim($("#txtNombre").val()) == ""){
+                alert("Ingrese el nombre de la categoría");
+                return false;
+            }                                                 
+
+            $.post("/Seccion/CreateCategoria", { "id": $("#ID").val(), "idCategoria": $("#IDCategoria").val(), "nombreCategoria": $.trim($("#txtNombre").val()) },
+                function (data) {
+                    // Successful requests get here
+                    // Update the page elements         
+                    document.getElementById("IDCategoria").value="0"; 
+                    window.open("@Url.Action("Details", "Seccion")", "_self");
+                });                                    
+        });  
+        
+        $(".btnNuevo").click(function () {        
+            document.getElementById("txtNombre").value = "";            
+            document.getElementById("IDCategoria").value = "0";     
+            $("#txtNombre").focus();     
+        }); 
+       
+        $(".imgEditar").click(function () {          
+            document.getElementById("txtNombre").value = $(this).attr("data-nombre");            
+            document.getElementById("IDCategoria").value = $(this).attr("data-id");          
+            $("#txtNombre").focus();     
+        }); 
+
+        // Document.ready -> link up remove event handler
+        $(".imgEliminar").click(function () {
+            // Get the id from the link            
+            // Perform the ajax post
+            
+            if (!confirm("¿Está seguro que desea eliminar la categoría?")) return false;
+            
+            $.post("/Seccion/EliminaCategoria", { "id": $(this).attr("id-seccion-categoria") },
+                function (data) {
+                    // Successful requests get here
+                    // Update the page elements
+                      
+                    window.open("@Url.Action("Details", "Seccion")", "_self");
+                });
+
+        });       
+});
+</script>
+
+@using (Html.BeginForm()) {    
+    <div class="widget stacked">
+        <div class="widget-header">		
+            <h3>Sección</h3>
+        </div> <!-- /widget-header -->		
+        <div class="widget-content">		
+            @Html.HiddenFor(model => model.ID)
+            <h3>@Html.LabelFor(model => model.Nombre, Model.Nombre)</h3>            
+        </div>
+    </div>
+    
+    <div class="widget stacked">
+        <div class="widget-header">		
+            <h3>Categorías</h3>
+        </div> <!-- /widget-header -->		
+        <div class="widget-content">		
+
+            <p>
+                <!-- Button to trigger modal -->
+                <a href="#CrearCategoria" role="button" class="btn btn-primary btnNuevo" data-toggle="modal">Crear Categoría</a>
+ 
+                <!-- Modal -->
+                <div id="CrearCategoria" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel">Categoría</h3>
+                  </div>
+                  <div class="modal-body">
+                    <p>Asígne un nombre a la categoría</p>
+                    <input  type="text" name="txtNombre" id="txtNombre" placeholder="Ingrese nombre de la categoría" />
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                    <button class="btnCrear btn btn-success">Grabar Categoría</button>
+                  </div>
+                </div>        
+            </p>
+
+            <input type="hidden" name="IDCategoria" id="IDCategoria" value="0" />
+
+            <table class="table table-striped table-bordered">
+                <tr>        
+                    <th>
+                        Nombre
+                    </th>                
+                    <th></th>
+                </tr>
+
+            @foreach (var item in ViewBag.SeccionCategoria) {
+                <tr>        
+                    <td>
+                        @item.Nombre
+                    </td>                    
+                    <td>       
+                        <a class="imgEditar" role="button" data-nombre="@item.Nombre" data-id="@item.ID" data-toggle="modal" href="#CrearCategoria"><img class="btn" style="cursor:pointer" src='@Url.Content("~/Content/Images/editar.png")' width='15px' height='15px' title='Editar categoría' /></a>
+                        <img class="imgEliminar btn" style="cursor:pointer" id-seccion-categoria="@item.ID" src='@Url.Content("~/Content/Images/eliminar.png")' width='15px' height='15px' title='Eliminar categoría' />
+                    </td>
+                </tr>
+            }
+
+            </table>
+        </div>
+    </div>
+}
+
+<div>
+    <input type="button" class="btn" value="Volver al listado de secciones" onclick="AbreLink('@Url.Action("Index", "Seccion")');" />    
+</div>

@@ -1,0 +1,267 @@
+﻿@model PMB.Data.Usuario
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <script language="javascript">
+        function Confirma() {
+            //Validación de ingreso del cuerpo de la noticia.
+            if ($.trim($("#Nombre").val()) == "") {
+                alert("Ingrese el nombre del usuario.");
+                document.getElementById("Nombre").focus();
+                return false;
+            }
+
+            //Validación de ingreso del cuerpo de la noticia.
+            if ($.trim($("#Direccion").val()) == "") {
+                alert("Ingrese la dirección del usuario.");
+                document.getElementById("Direccion").focus();
+                return false;
+            }
+
+            //Validación de ingreso del cuerpo de la noticia.
+            if ($.trim($("#Numero").val()) == "") {
+                alert("Ingrese el número de casa del usuario.");
+                document.getElementById("Numero").focus();
+                return false;
+            }
+
+            //Validación de ingreso del cuerpo de la noticia.
+            if ($.trim($("#Celular").val()) == "") {
+                alert("Ingrese el celular del usuario.");
+                document.getElementById("Celular").focus();
+                return false;
+            }
+
+            //Validación de ingreso del cuerpo de la noticia.
+            if ($.trim($("#Correo").val()) == "") {
+                alert("Ingrese el correo del usuario.");
+                document.getElementById("Correo").focus();
+                return false;
+            }
+
+            
+            //Validación de correos ingresada.
+            if ($.trim($("#Correo").val().toUpperCase()) != $.trim($("#txtCorreo2").val().toUpperCase())) {
+                alert("No coincide la información entre los correos ingresados.");
+                document.getElementById("txtCorreo2").select();
+                document.getElementById("txtCorreo2").focus();
+                return false;
+            }
+
+            //Si el usuario que se está registrando es nuevo, entonces valida que se haya ingresado
+            //password, de otra forma mantiene la password anterior.
+            if ($.trim($("#existeUsuario").val()) != "S") {
+                //Validación de ingreso del cuerpo de la noticia.
+                if ($.trim($("#Password").val()) == "") {
+                    alert("Ingrese el password del usuario.");
+                    document.getElementById("Password").focus();
+                    return false;
+                }
+
+                //Validación de password ingresada.
+                if ($.trim($("#Password").val().toUpperCase()) != $.trim($("#txtPassword2").val().toUpperCase())) {
+                    alert("No coincide la información entre los Password ingresados.");
+                    document.getElementById("txtPassword2").select();
+                    document.getElementById("txtPassword2").focus();
+                    return false;
+                }
+            }
+
+            return true;
+        }                
+        
+
+        $(function () {
+            //Actualizar password
+
+            // Document.ready -> link up remove event handler
+                $(".btnUpdPassword").click(function () {
+                    // Get the id from the link            
+                    // Perform the ajax post                        
+                    if($.trim($("#txtPassword").val()) == ""){
+                        alert("Ingrese el nuevo password");
+                        document.getElementById("txtPassword").select();
+                        document.getElementById("txtPassword").focus();
+                        return false;
+                    }                         
+
+                    if($.trim($("#txtPassword2").val()) == ""){
+                        alert("Reingresa el nuevo password");
+                        document.getElementById("txtPassword2").select();
+                        document.getElementById("txtPassword2").focus();
+                        return false;
+                    }                         
+
+                    if($.trim($("#txtPassword").val().toUpperCase()) != $.trim($("#txtPassword2").val().toUpperCase())){
+                        alert("No coincide la información entre los Password ingresados.");
+                        document.getElementById("txtPassword2").select();
+                        document.getElementById("txtPassword2").focus();
+                        return false;
+                    }                         
+
+                    $.post("/Usuario/CreatePassword", { "id": @Model.ID, "password": $.trim($("#txtPassword").val()) },
+                        function (data) {
+                            // Successful requests get here
+                            // Update the page elements
+                            //alert(data.mensaje);
+                            alert(data.mensaje);
+                        });
+
+                    $("#btnClosePassword").click();
+                });  
+                        
+        });
+    </script>
+</head>
+
+@using (Html.BeginForm("Create", "Usuario", FormMethod.Post, new { onsubmit = "return Confirma();", id="form1" }))
+{
+    @Html.ValidationSummary(true)
+
+
+     if (ViewBag.mensaje!=""){
+         
+         if (ViewBag.error=="S"){
+            <p class="alert alert-error">@ViewBag.mensaje</p>
+         }else{
+            <p class="alert alert-success">@ViewBag.mensaje</p>
+         }
+         
+     }        
+
+    
+<div class="widget stacked">
+    <div class="widget-header">
+		<h3>Usuario</h3>
+	</div> <!-- /widget-header -->
+    
+    
+    <!-- Modal -->
+    <div id="UpdPassword" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Actualizar password</h3>
+        </div>
+        <div class="modal-body">    
+        <p>Nuevo password</p>
+        <input  class="span12" type="password" name="txtPassword" id="txtPassword" placeholder="Ingresa tu password" />
+        <p>Reingresa el password</p>
+        <input  class="span12" type="password" name="txtPassword2" id="txtPassword2" placeholder="Reingresa tu password" />
+        </div>
+        <div class="modal-footer">
+        <button id="btnClosePassword" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <a class="btnUpdPassword btn btn-success">Actualizar contraseña</a>
+        </div>
+    </div>
+    
+    	
+	<div class="widget-content">		
+            
+    <input type="hidden" name="ID" value="@ViewBag.ID" />    
+    <input type="hidden" name="ID_Barrio" value="@ViewBag.ID_Barrio" />    
+    <input type="hidden" name="Error" value="@ViewBag.error" />    
+    <input type="hidden" name="existeUsuario" id="existeUsuario" value="@ViewBag.existeUsuario" />    
+
+    <div class="row-fluid">
+        <div class="span3">
+            <p>@Html.LabelFor(model => model.Rut)</p>
+            @Html.TextBoxFor(model => model.Rut, new { size = "30", placeholder = "Ingrese RUT" })
+        </div>
+        <div class="span3">
+            <p>@Html.LabelFor(model => model.Nombre)</p>
+            @Html.TextBoxFor(model => model.Nombre, new { size = "30", placeholder = "Ingrese nombre" })
+        </div>
+        <div class="span3">
+            <p>@Html.LabelFor(model => model.Direccion)</p>
+            @Html.TextBoxFor(model => model.Direccion, new { size = "30", placeholder = "Ingrese dirección" })
+        </div>
+        
+    </div>
+
+    <div class="row-fluid">
+        <div class="span3">
+            <p>@Html.LabelFor(model => model.Numero)</p>
+            @Html.TextBoxFor(model => model.Numero, new { size = "30", placeholder = "Ingrese número" })
+        </div>
+        <div class="span3">
+            <p>@Html.LabelFor(model => model.Telefono)</p>
+            @Html.TextBoxFor(model => model.Telefono, new { size = "30", placeholder="Ingrese teléfono" })
+        </div>
+        <div class="span3">
+            <p>@Html.LabelFor(model => model.Celular)</p>
+            @Html.TextBoxFor(model => model.Celular, new { size = "30", placeholder = "Ingrese celular" })
+        </div>
+        
+    </div>
+
+    <div class="row-fluid">
+        <div class="span3">
+            <p>@Html.LabelFor(model => model.Correo)</p>
+            @Html.TextBoxFor(model => model.Correo, new { size = "30", placeholder = "Ingrese correo" })
+        </div>
+        <div class="span6">
+            <p>Reingrese correo</p>
+            @Html.TextBoxFor(model => model.Correo, new { size = "30", name = "txtCorreo2", id = "txtCorreo2", placeholder = "Reingrese correo" })
+        </div>
+    </div>
+    @if (ViewBag.existeUsuario!="S"){
+        <div class="row-fluid">
+            <div class="span3">
+                <p>@Html.LabelFor(model => model.Password)</p>
+                @Html.PasswordFor(model => model.Password, new { value = @Model.Password, placeholder = "Ingrese password" })
+            </div>
+            <div class="span6">
+                <p>Reingrese password</p>
+                @Html.PasswordFor(model => model.Password, new { id = "txtPassword2", name = "txtPassword2", value = @Model.Password, placeholder = "Reingrese password" })
+            </div>        
+        </div>    
+    }else{
+       <!-- Button to trigger modal -->
+       <p>Password</p>
+       <a href="#UpdPassword" role="button" class="btn btn-primary" data-toggle="modal">Actualizar password</a>   
+    }
+    
+    
+        <hr />
+        @{
+            
+    if (Model.Nombre != "")
+    {
+                <div class="row-fluid">
+                    <div class="span12">
+                        <u>Imagen de perfil:</u><br /><br />La siguiente imagen será la que lo representará en el portal, si desea asignar una nueva imagen o actualizar la actual, favor asocie su correo @Html.DisplayFor(model => model.Correo) gratuitamente en sitio gravatar en el siguiente link: <a href="http://es.gravatar.com/" target=_blank>http://es.gravatar.com</a>
+                        <br /><br />
+                        <p>@Html.GravatarImage(Model.Correo, size: 80, defaultImage: GravatarHtmlHelper.DefaultImage.Identicon, rating: GravatarHtmlHelper.Rating.PG)</p>
+                    </div>
+                </div>
+            
+                <hr />
+    }
+        }
+        
+
+    <div class="row-fluid">
+        <div class="span12">
+            <u>Notificaciones:</u><br /><br />
+
+            <input type="checkbox" id="chkNotificaSeg" name="chkNotificaSeg" @Html.Raw((Model.Notifica_Noticia_Seguridad == "S") ? "checked" : "") />&nbsp;Deseo recibir notificación por correo cuando se ingresen noticias de seguridad.<br />
+            <input type="checkbox" id="chkNotificaVec" name="chkNotificaVec" @Html.Raw((Model.Notifica_Noticia_Vecino == "S") ? "checked" : "") />&nbsp;Deseo recibir notificación por correo cuando se ingresen noticias de vecinos.
+        </div>
+    </div>
+    </div> <!-- /widget-content -->
+			
+</div> <!-- /widget -->    
+
+        <div class="editor-label">
+            @Html.HiddenFor(model => model.Admin)
+        </div>             
+    
+        <p>
+            <input type="submit" value="Grabar" class="btn btn-success"  />
+        </p>
+    
+}

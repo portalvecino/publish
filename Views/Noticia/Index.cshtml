@@ -1,0 +1,217 @@
+﻿@model PagedList.IPagedList<PMB.Data.Noticia>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script language=javascript>
+
+    $(function () {
+
+        $(".divID").each(function () {                        
+            $.post("/Noticia/GetEstadisticasNoticiaAjax", { "id": $(this).attr("id") },
+                function (data) {                    
+                    // Successful requests get here
+                    // Update the page elements
+                    //$("#" + data.idNoticia).text(data.porcMeGusta);
+                    var sHtml="Vista por " + data.visitasDistintas + " vecino(s)&nbsp;&nbsp;|&nbsp;&nbsp;";
+                    sHtml += "<img src='@Url.Content("~/Content/Images/Comment.png")' width='15px' height='15px' title='Comentarios' />&nbsp;" + data.comentarios;
+                    sHtml += "&nbsp;&nbsp;&nbsp;&nbsp;<img src='@Url.Content("~/Content/Images/Visit.png")' width='15px' height='15px' title='Visitas' />&nbsp;"  + data.visitas;
+                    sHtml += "&nbsp;&nbsp;&nbsp;&nbsp;<img src='@Url.Content("~/Content/Images/Like_up.png")' width='15px' height='15px' title='Me gusta' />&nbsp;" +  data.porcMeGusta + "%";
+
+                    $("#" + data.idNoticia).html(sHtml);
+
+                });
+        });
+
+        // Document.ready -> link up remove event handler
+        $(".imgEliminar").click(function () {
+            // Get the id from the link            
+            // Perform the ajax post
+            if(!confirm("¿Está seguro que desea eliminar la noticia?, si elimina no podrá ser visualizada por los demás usuarios")) return false;
+            
+            $.post("/Noticia/Elimina", { "id": $(this).attr("id-noticia") },
+                function (data) {
+                    // Successful requests get here
+                    // Update the page elements
+
+                    alert(data.mensaje, "Mensaje de confirmación");
+                    window.open("@Url.Action("Index", "Noticia", new { tipoNoticia = ViewBag.tipoNoticia, page = Model.PageNumber, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })", "_self");
+                });
+
+        });         
+        
+    })
+
+
+</script>
+
+
+<div class="widget stacked">
+    <div class="widget-header">		
+	
+
+@if (ViewBag.tipoNoticia != "S")
+{    
+    <h3>Noticias de vecinos</h3>
+ 
+}
+else
+{
+    <h3>Noticias de seguridad</h3>    
+}
+
+</div> <!-- /widget-header -->
+				
+<div class="widget-content">		
+
+
+<div class="row-fluid">
+    <div class="span3">
+                
+        
+
+@if (ViewBag.tipoNoticia != "S")
+{
+    <input class="btn btn-primary" type="button" value="Crear nueva noticia" onclick="AbreLink('@Url.Action("Create", "Noticia", new { tipoNoticia = "", _id = PMB.Bussiness.Seguridad.EncryptString("0") })');" />
+    
+}
+else if (Request.Cookies["Admin"].Value=="S")
+{    
+    <input class="btn btn-primary" type="button" value="Crear nueva noticia" onclick="AbreLink('@Url.Action("Create", "Noticia", new { tipoNoticia = "S", _id = PMB.Bussiness.Seguridad.EncryptString("0") })');" />
+}
+    
+    </div>
+
+    <div class="span1 offset5">
+        <div class="btn-group">
+          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+            Ordenar noticias por
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <!-- dropdown menu links -->
+            <li><a onclick="AbreLink('@Url.Action("Index", "Noticia", new { tipoNoticia = ViewBag.tipoNoticia, sortOrder = "MN" })');" tabindex="-1" href="#">Más recientes</a></li>
+            <li><a onclick="AbreLink('@Url.Action("Index", "Noticia", new { tipoNoticia = ViewBag.tipoNoticia, sortOrder = "MA" })');" tabindex="-1" href="#">Más antiguas</a></li>
+            <li><a onclick="AbreLink('@Url.Action("Index", "Noticia", new { tipoNoticia = ViewBag.tipoNoticia, sortOrder = "MC" })');" tabindex="-1" href="#">Más comentadas</a></li>
+            <li><a onclick="AbreLink('@Url.Action("Index", "Noticia", new { tipoNoticia = ViewBag.tipoNoticia, sortOrder = "MV" })');" tabindex="-1" href="#">Más visitadas</a></li>
+            <li><a onclick="AbreLink('@Url.Action("Index", "Noticia", new { tipoNoticia = ViewBag.tipoNoticia, sortOrder = "MG" })');" tabindex="-1" href="#">Más aceptadas</a></li>
+            <li><a onclick="AbreLink('@Url.Action("Index", "Noticia", new { tipoNoticia = ViewBag.tipoNoticia, sortOrder = "MNG" })');" tabindex="-1" href="#">Menos aceptadas</a></li>
+          </ul>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+@foreach (var item in Model)
+{        
+    
+    if (item.Eliminada == "S")        
+    {
+        <div class="row-fluid">
+            <div class="span12">
+                <span class="label label-important">Eliminada por el usuario</span>
+            </div>
+        </div>
+    }
+    
+    <div class="row-fluid">    
+        <div class="span6">
+        <!--
+        <h4>@Html.ActionLink(item.Titulo, "Details", new { id = item.ID })</h4></div>
+        -->
+        <blockquote>
+            <p>@Html.ActionLink(item.Titulo, "Details", new { _id = PMB.Bussiness.Seguridad.EncryptString(item.ID) })</p>
+            <small>Por @Html.DisplayFor(modelItem => item.Usuario.Nombre) el @Html.DisplayFor(modelItem => item.Fecha) <div class="divID" id="@item.ID">&nbsp;</div></small>                        
+        </blockquote>
+        </div>
+        <div class="span2 offset4">
+            @if (item.Usuario.ID == Convert.ToDecimal(PMB.Bussiness.Seguridad.DecryptString(Request.Cookies["idUsuario"].Value)))
+            {
+                <img class="btn" style="cursor:pointer;" onclick="AbreLink('@Url.Action("Create", "Noticia", new { tipoNoticia = ViewBag.tipoNoticia, _id = PMB.Bussiness.Seguridad.EncryptString(@item.ID) })');" style="cursor:pointer" src='@Url.Content("~/Content/Images/editar.png")' width='15px' height='15px' title='Editar noticia' />
+                <img class="imgEliminar btn" style="cursor:pointer" id-noticia="@item.ID" src='@Url.Content("~/Content/Images/eliminar.png")' width='15px' height='15px' title='Eliminar noticia' />
+            }
+            else
+            {
+                <a>&nbsp;</a>
+            }
+
+            @if (item.Noticia_Archivo.Count > 0)
+            {
+                <img src='@Url.Content("~/Content/Images/attach.png")' width='15px' height='15px' title='@item.Noticia_Archivo.Count Archivo(s) adjunto(s)' />
+            }
+        </div>            
+    </div>
+    <!--
+    <div class="row-fluid">
+        <div class="span6">
+            <span class="label label-info">
+                Por @Html.DisplayFor(modelItem => item.Usuario.Nombre) el @Html.DisplayFor(modelItem => item.Fecha)                            
+            </span>            
+        </div>
+        <div class="span3 offset1">
+            <div class="divID" id="@item.ID">&nbsp;</div>
+        </div>
+    </div>
+    -->
+    <div class="row-fluid">
+        <div class="span12">
+            @if (item.Cuerpo.Length > 200)
+            {
+                var p = @item.Cuerpo.Substring(0, 200) + "...";
+                @p.ToString();
+            }
+            else
+            {
+                @item.Cuerpo;
+            }
+        </div>   
+    </div>                      
+    <hr style="color:Gray" />
+}
+
+    </div>
+</div>
+
+
+
+<!--
+</td></tr>
+</table>
+-->
+
+<div>
+    <br />
+    <center>
+    Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber)
+    de @Model.PageCount
+     
+    @if (Model.HasPreviousPage)
+    {
+        @Html.ActionLink("<<", "Index", new { tipoNoticia = ViewBag.tipoNoticia, page = 1, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+        @Html.Raw(" ");
+        @Html.ActionLink("< Prev", "Index", new { tipoNoticia = ViewBag.tipoNoticia, page = Model.PageNumber - 1, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+    }
+    else
+    {
+        @:<<
+        @Html.Raw(" ");
+        @:< Anterior
+    }
+     
+    @if (Model.HasNextPage)
+    {
+        @Html.ActionLink("Next >", "Index", new { tipoNoticia = ViewBag.tipoNoticia, page = Model.PageNumber + 1, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+        @Html.Raw(" ");
+        @Html.ActionLink(">>", "Index", new { tipoNoticia = ViewBag.tipoNoticia, page = Model.PageCount, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })
+    }
+    else
+    {
+        @:Siguiente >
+        @Html.Raw(" ")
+        @:>>
+    }
+    </center>
+</div>

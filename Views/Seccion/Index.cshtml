@@ -1,0 +1,122 @@
+﻿@model IEnumerable<PMB.Data.Seccion>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script language="javascript">
+$(function () {
+    //btnCrear
+
+    // Document.ready -> link up remove event handler
+        $(".btnCrear").click(function () {
+            // Get the id from the link            
+            // Perform the ajax post                        
+            if($.trim($("#txtNombre").val()) == ""){
+                alert("Ingrese el nombre de la sección");
+                return false;
+            }                         
+
+            $.post("/Seccion/Create", { "id": document.getElementById("IDSeccion").value, "nombreSeccion": $.trim($("#txtNombre").val()) },
+                function (data) {
+                    // Successful requests get here
+                    // Update the page elements                    
+                    window.open("@Url.Action("Index", "Seccion")", "_self");
+                });
+            
+            document.getElementById("IDSeccion").value="0";
+        });  
+        
+                
+        $(".btnNuevo").click(function () {          
+            document.getElementById("txtNombre").value = "";            
+            document.getElementById("IDSeccion").value = "0";   
+            $("#txtNombre").focus();            
+        }); 
+
+        $(".imgEditar").click(function () {        
+            document.getElementById("txtNombre").value = $(this).attr("data-nombre");            
+            document.getElementById("IDSeccion").value = $(this).attr("data-id");          
+            $("#txtNombre").focus();     
+        }); 
+
+        // Document.ready -> link up remove event handler
+        $(".imgEliminar").click(function () {
+            // Get the id from the link            
+            // Perform the ajax post
+            
+            if (!confirm("¿Está seguro que desea eliminar la sección?")) return false;
+            
+            $.post("/Seccion/Elimina", { "id": $(this).attr("id-seccion") },
+                function (data) {
+                    // Successful requests get here
+                    // Update the page elements           
+                    if (data.valor=="N"){
+                        document.getElementById("Mensaje").innerText = data.mensaje;
+                        document.getElementById("Mensaje").className = "alert alert-danger";
+                    }else window.open("@Url.Action("Index", "Seccion")", "_self");
+                });
+
+        });       
+});
+</script>
+
+<div class="widget stacked">
+    <div class="widget-header">		
+        <h3>Seccion</h3>
+    </div> <!-- /widget-header -->		
+<div class="widget-content">		
+
+    <p>
+        <!-- Button to trigger modal -->
+        <a href="#CrearSeccion" role="button" class="btn btn-primary btnNuevo" data-toggle="modal">Crear sección</a>
+ 
+        <!-- Modal -->
+        <div id="CrearSeccion" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Sección</h3>
+          </div>
+          <div class="modal-body">
+            <p>Asígne un nombre a la sección</p>
+            <input  type="text" name="txtNombre" id="txtNombre" placeholder="Ingrese nombre de sección" />
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button class="btnCrear btn btn-success">Grabar Sección</button>
+          </div>
+        </div>        
+    </p>
+    
+    <input type="hidden" name="IDSeccion" id="IDSeccion" value="0" />
+
+    <p id="Mensaje"></p>
+
+    <table class="table table-striped table-bordered">
+        <tr>        
+            <th>
+                Nombre
+            </th>
+            <th>
+                Fecha
+            </th>            
+            <th></th>
+        </tr>
+
+    @foreach (var item in Model) {
+        <tr>        
+            <td>
+                @Html.ActionLink(item.Nombre, "Details", new { _id = PMB.Bussiness.Seguridad.EncryptString(item.ID) })                
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>        
+            <td>               
+                <a class="imgEditar" role="button" data-nombre="@item.Nombre" data-id="@item.ID" data-toggle="modal" href="#CrearSeccion"><img class="btn" style="cursor:pointer" src='@Url.Content("~/Content/Images/editar.png")' width='15px' height='15px' title='Editar sección' /></a>
+                <img class="imgEliminar btn" style="cursor:pointer" id-seccion="@item.ID" src='@Url.Content("~/Content/Images/eliminar.png")' width='15px' height='15px' title='Eliminar sección' />
+            </td>
+        </tr>
+    }
+
+    </table>
+</div>

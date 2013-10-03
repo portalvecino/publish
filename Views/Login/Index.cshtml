@@ -1,0 +1,89 @@
+﻿@model PMB.Data.Usuario
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    
+    <title>portalvecino: tu comunidad online</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Le styles -->
+    <link href="@Url.Content("~/Scripts/bootstrap/css/bootstrap.css")" rel="stylesheet">
+    
+    <link href="@Url.Content("~/Scripts/bootstrap/css/bootstrap-responsive.css")" rel="stylesheet">
+    <script src="@Url.Content("~/Scripts/bootstrap/js/bootstrap.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/bootstrap/js/bootstrap.min.js")" type="text/javascript"></script>
+    <script language="javascript">
+        function Confirma() {
+            return true;
+        }
+
+        function Foco() {
+            document.getElementById("Correo").focus();
+
+            document.getElementById("form1").className = "form-signin";
+
+            if (document.getElementById("Mensaje").innerText != "") {
+                document.getElementById("Mensaje").className = "alert alert-error";
+            }
+        }
+        
+    </script>
+
+    <style type="text/css">
+      body {
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #f5f5f5;
+      }
+
+      .form-signin {
+        max-width: 300px;
+        padding: 19px 29px 29px;
+        margin: 0 auto 20px;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        -webkit-border-radius: 5px;
+           -moz-border-radius: 5px;
+                border-radius: 5px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+                box-shadow: 0 1px 2px rgba(0,0,0,.05);
+      }
+      .form-signin .form-signin-heading,
+      .form-signin .checkbox {
+        margin-bottom: 10px;
+      }
+      .form-signin input[type="text"],
+      .form-signin input[type="password"] {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+      }
+
+    </style>
+</head>
+<body onload="Foco();">        
+
+
+    <div class="container">        
+
+@using (Html.BeginForm("Index", "Login", FormMethod.Post, new { id = "form1" }))
+{
+    <input type=hidden name="ID_Barrio" value="0" />
+    <h2 class="form-signin-heading">Acceso usuarios</h2>
+    <input type="text" class="input-block-level" placeholder="Email address" maxlength="50" id="Correo" name="Correo" />
+    <input type="password" class="input-block-level" placeholder="Password" maxlength="50" id="Password" name="Password" />
+    <p id="Mensaje">@ViewBag.Error</p>
+    <button class="btn btn-large btn-primary" type="submit">Acceder</button>       
+}   
+   </div>
+
+</body>
+</html>

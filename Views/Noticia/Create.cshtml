@@ -1,0 +1,145 @@
+﻿@model PMB.Data.Noticia
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script language="javascript">
+    $(function () {
+        // Document.ready -> link up remove event handler
+        $(".imgEliminar").click(function () {
+            // Get the id from the link            
+            // Perform the ajax post
+            $.post("/Noticia/EliminaArchivoAdjunto", { "id": $(this).attr("id-archivo") },
+                function (data) {
+                    // Successful requests get here
+                    // Update the page elements
+
+                    alert(data.mensaje, "Mensaje de confirmación");
+                    $("#" + data.valor).remove();
+                });
+
+        });       
+
+    });
+    
+    
+    
+    
+    function Confirma() {        
+
+        //Validación de ingreso del título de la noticia.
+        if ($.trim($("#Titulo").val()) == "") {
+            alert("Ingrese el <b>título</b> de la noticia.", "Problema al grabar");
+            document.getElementById("Titulo").focus();
+            return false;
+        }
+
+        //Validación de ingreso del cuerpo de la noticia.
+        if ($.trim($("#Cuerpo").val()) == "") {
+            alert("Ingrese el <b>cuerpo</b> de la noticia.", "Problema al grabar");
+            document.getElementById("Cuerpo").focus();
+            return false;
+        }
+        
+        if (document.getElementById("Photo").value != "") {            
+            //if (document.getElementById("Photo").value.search(".") > 0) {                
+                var sExt = document.getElementById("Photo").value.split(".")[1];
+                if (sExt.toLowerCase() != "jpg" && sExt.toLowerCase() != "png" && sExt.toLowerCase() != "bmp" && sExt.toLowerCase() != "pdf" && sExt.toLowerCase() != "doc" && sExt.toLowerCase() != "xls" && sExt.toLowerCase() != "zip" && sExt.toLowerCase() != "rar") {
+                    alert("Seleccione un formato de archivo válido: imágenes (jpg, png, bmp); documentos (pdf, doc, xls); comprimidos (rar, zip)", "Problema al grabar");
+                    return false;   
+                }
+            //} else return false;
+        }
+
+        return true;
+    }    
+    
+    
+</script>
+
+@using (Html.BeginForm("Create", "Noticia", FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "return Confirma();" }))
+{
+    @Html.ValidationSummary(true)
+
+<label class="label">@ViewBag.errCorreo</label>
+    
+<div class="widget stacked">
+    <div class="widget-header">
+		<h3>Noticia</h3>
+	</div> <!-- /widget-header -->
+				
+	<div class="widget-content">		
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Titulo)
+        </div>
+        <div class="editor-field">
+            <input type="text" name="Titulo" id="Titulo" value="@Html.DisplayFor(p => p.Titulo)" class="input-block-level" placeholder="Ingrese un título" />            
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Cuerpo)
+        </div>
+        <div class="editor-field">
+            <textarea name="Cuerpo" id="Cuerpo" class="input-block-level" rows="10" placeholder="Ingrese el detalle de la noticia">@Html.DisplayFor(p=>p.Cuerpo)</textarea>                
+        </div>
+     </div>
+</div>
+
+<div class="widget stacked">
+    <div class="widget-header">
+		<h3>Agregar archivo adjunto</h3>
+	</div> <!-- /widget-header -->
+				
+	<div class="widget-content">		
+        
+        @foreach (var itemArchivo in Model.Noticia_Archivo)
+        {
+            String nombreArchivo = "";
+            nombreArchivo = @itemArchivo.Nombre;             
+
+            <div id="@itemArchivo.ID">
+                <a href="@Url.Action("Imagen", "Noticia", new { id = itemArchivo.ID })"><img src="@Url.Content("~/Content/Images/attach.png")" width="15px" height="15px" />&nbsp;@nombreArchivo</a>
+                <img class="imgEliminar" style="cursor:pointer" id-archivo="@itemArchivo.ID" src='@Url.Content("~/Content/Images/eliminar.png")' width='15px' height='15px' title='Eliminar archivo' />            
+                <br />
+            </div>
+        }
+        
+
+        @for (var ix = Model.Noticia_Archivo.Count() + 1; ix <= 5; ix++)
+        {
+            
+            <div class="editor-field">     
+                
+            @{
+                    
+            var p = "File" + ix;
+                <input name='@p.ToString()' id='@p.ToString()' type='file' readonly onpaste='return false;' />
+                                      
+            }
+                
+
+            </div>
+                
+        }
+                
+                            
+
+        @if (ViewBag.tipoNoticia == "S")
+        {
+            @Html.Hidden("Seguridad", "S")
+        }
+    </div>
+</div>
+
+        <p>
+            <input type="submit" value="Grabar noticia" class="btn btn-success"  />
+        </p>    
+}
+
+<div>
+    <input class="btn" type="button" value="Volver al listado de noticias" onclick="AbreLink('@Url.Action("Index", "Noticia", new { tipoNoticia = ViewBag.tipoNoticia })');" />    
+</div>

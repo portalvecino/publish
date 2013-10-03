@@ -1,0 +1,98 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<script language="javascript">
+    function RecargarPag() {
+        window.open('@Url.Action("Index", "Home")', "_self");
+    }
+
+    //Recargar la misma página cada 2 minutos
+    var recarga = setInterval("RecargarPag();", 120000);
+
+</script>       
+
+<div class="widget stacked">
+					
+	<div class="widget-header">
+		<h3>Últimas Noticias de Seguridad</h3>
+	</div> <!-- /widget-header -->
+				
+	<div class="widget-content">					
+
+        <div class="row-fluid">
+           <ul class="thumbnails">
+              
+        @foreach (var item in ViewBag.SeguridadModel)
+        {   
+            <li class="span4">
+                <div class="thumbnail">
+                  
+                  <div class="caption">                    
+		            <blockquote>
+                        <p><a href="@Url.Action("Details", "Noticia", new { _id = PMB.Bussiness.Seguridad.EncryptString(item.ID) })">@item.Titulo</a></p>
+                        <small>Por @item.Usuario.Nombre el @item.Fecha</small>
+                    </blockquote>                       <p>
+                        @if (item.Cuerpo.Length > 200)
+                        {
+                            var p = @item.Cuerpo.Substring(0, 200) + "...";
+                            @p.ToString();
+                        }
+                        else
+                        {
+                            @item.Cuerpo;
+                        }
+                    </p>
+     
+                  </div>
+                </div>
+            </li>                                                                        
+        }        
+        </ul> 
+        </div><!--/row-->
+        <p><a onclick="AbreLink('@Url.Action("Index", "Noticia", new { tipoNoticia = "S" })');" class="btn" href="#">Ver más... &raquo;</a></p>                         
+    
+    </div> <!-- /widget-content -->
+			
+</div> <!-- /widget -->                            
+
+<div class="widget stacked">
+    <div class="widget-header">
+		<h3>Últimas Noticias de Vecinos</h3>
+	</div> <!-- /widget-header -->
+				
+	<div class="widget-content">			
+        <div class="row-fluid">
+        <ul class="thumbnails">
+        @foreach (var item in ViewBag.VecinosModel)
+        {          
+            <li class="span4">
+                <div class="thumbnail">                  
+
+                  <div class="caption">                    
+		            <blockquote>
+                        <p><a href="@Url.Action("Details", "Noticia", new { _id = PMB.Bussiness.Seguridad.EncryptString(item.ID) })">@item.Titulo</a></p>
+                        <small>Por @item.Usuario.Nombre el @item.Fecha</small>
+                    </blockquote>                       <p>
+                        @if (item.Cuerpo.Length > 200)
+                        {
+                            var p = @item.Cuerpo.Substring(0, 200) + "...";
+                            @p.ToString();
+                        }
+                        else
+                        {
+                            @item.Cuerpo;
+                        }
+                    </p>
+     
+                  </div>
+                </div>
+            </li>                                                
+        }     
+        </ul>    
+        </div><!--/row-->
+        <p><a onclick="AbreLink('@Url.Action("Index", "Noticia")');" class="btn" href="#">Ver más... &raquo;</a></p>                         
+    
+</div> <!-- /widget-content -->
+			
+</div> <!-- /widget -->      
+    

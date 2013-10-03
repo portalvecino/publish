@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>portalvecino: tu comunidad online</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="@Url.Content("~/Scripts/bootstrap/css/bootstrap.min.css")" rel="stylesheet">
+    <link href="@Url.Content("~/Scripts/bootstrap/css/bootstrap-responsive.css")" rel="stylesheet">
+    <link href="@Url.Content("~/Scripts/bootstrap/css/bootstrap-responsive.min.css")" rel="stylesheet">     
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet">     
+    <script src="http://code.jquery.com/jquery.js"></script>    
+    <script src="@Url.Content("~/Scripts/bootstrap/js/bootstrap.min.js")" type="text/javascript"></script>
+
+    <style type="text/css">            
+     
+      
+      @@media (max-width: 980px) {
+        /* Enable use of floated navbar text */
+        .navbar-text.pull-right {
+          float: none;
+          padding-left: 5px;
+          padding-right: 5px;
+        }
+      }
+      
+    </style>
+
+    <script language="javascript">
+        function AbreLink(link) {
+            window.open(link, "_self");
+        }
+
+        
+    </script>
+</head>
+<body>
+    
+    <div class="navbar navbar-inverse">
+        <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="@Url.Action("Index", "Home")">portalvecino</a>
+            <div class="nav-collapse collapse navbar-responsive-collapse">
+            <ul class="nav">
+                @if (Request.Cookies["Admin"].Value == "S")
+                {
+                   <li>@Html.ActionLink("Vecinos", "Index", "Usuario")</li>
+                }                                                                                                              
+                <li>@Html.ActionLink("Principal", "Index", "Home")</li> 
+                <li class="dropdown">
+                    <a class="dropdown-toggle" style="cursor:pointer;" data-toggle="dropdown"><i class="icon-user"></i> @PMB.Bussiness.Seguridad.DecryptString(Request.Cookies["nombreUsuario"].Value) <span class="caret"></span></a>
+
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                        <li><a style="cursor:pointer" href="@Url.Action("Create", "Usuario", new { _id = Request.Cookies["idUsuario"].Value })"><i class="icon-user"></i> Mi cuenta</a></li>
+                        @if (Request.Cookies["Admin"].Value == "S")
+                        {
+                            <li><a style="cursor:pointer" href="@Url.Action("Index", "Seccion")" ><i class="icon-wrench"></i> Secciones</a></li>
+                        }
+                        <li class="divider"></li>
+                        <li><a style="cursor:pointer" href="@Url.Action("CerrarSesion", "Login")" ><i class="icon-off"></i> Cerrar sesión</a></li>                                          
+                    </ul>
+
+
+                <!--
+                <div class="btn-group">
+                <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i> @Request.Cookies["nombreUsuario"].Value <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li><a style="cursor:pointer" href="@Url.Action("Create", "Usuario", new { id = Request.Cookies["idUsuario"].Value })"><i class="icon-user"></i> Mi cuenta</a></li>
+                    @if (Request.Cookies["Admin"].Value == "S")
+                    {
+                        <li><a style="cursor:pointer" href="@Url.Action("Index", "Seccion")" ><i class="icon-wrench"></i> Secciones</a></li>
+                    }
+                    <li class="divider"></li>
+                    <li><a style="cursor:pointer" href="@Url.Action("CerrarSesion", "Login")" ><i class="icon-off"></i> Cerrar sesión</a></li>                                        
+                </ul>
+                </div>
+                -->
+                </li>
+            </ul>
+            <!--
+            <form class="navbar-search pull-left" action="">
+                <input type="text" class="search-query span2" placeholder="Búsqueda">
+            </form>
+            -->
+            <p class="navbar-text pull-right">
+              @Html.Partial("_LogOnPartial")
+            </p>
+            </div><!-- /.nav-collapse -->
+        </div>
+        </div><!-- /navbar-inner -->
+    </div><!-- /navbar -->
+
+    <!--
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">            
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" onclick="AbreLink('@Url.Action("Index", "Home")');">portalvecino</a>
+          <div class="nav-collapse collapse">
+            <p class="navbar-text pull-right">
+              @Html.Partial("_LogOnPartial")
+            </p>
+            <ul class="nav">
+                @if (Request.Cookies["Admin"].Value == "S")
+                {
+                   <li>@Html.ActionLink("Vecinos", "Index", "Usuario")</li>
+                }                                                                                                              
+                <li>@Html.ActionLink("Principal", "Index", "Home")</li>                   
+
+                <li>
+                   
+                    <div class="btn-group">
+                        <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i> @Request.Cookies["nombreUsuario"].Value <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                          <li><a style="cursor:pointer" onclick="AbreLink('@Url.Action("Create", "Usuario", new { id = Request.Cookies["idUsuario"].Value })');"><i class="icon-user"></i> Mi cuenta</a></li>
+                            @if (Request.Cookies["Admin"].Value == "S")
+                            {
+                               <li><a style="cursor:pointer" onclick="AbreLink('@Url.Action("Index", "Seccion")');" ><i class="icon-wrench"></i> Secciones</a></li>
+                            }
+                          <li class="divider"></li>
+                          <li><a style="cursor:pointer" onclick="AbreLink('@Url.Action("CerrarSesion", "Login")');" ><i class="icon-off"></i> Cerrar sesión</a></li>
+                        </ul>
+                      </div>
+                </li>                
+            </ul>                                
+          </div>
+        </div>
+      </div>
+    </div>    
+    -->
+
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">                     
+          @Html.TraeSecciones(Convert.ToInt16(PMB.Bussiness.Seguridad.DecryptString(Request.Cookies["idBarrio"].Value)))
+        </div><!--/span-->
+        <div class="span9">          
+          @RenderBody()
+        </div><!--/span-->
+      </div><!--/row-->
+
+      <hr />
+
+      <footer>
+        <p>&copy; Equipo portalvecino</p>
+      </footer>
+
+      
+    </div><!--/.fluid-container-->    
+</body>
+</html>
